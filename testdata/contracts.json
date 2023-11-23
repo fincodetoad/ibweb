@@ -1,0 +1,127 @@
+[
+    {
+       "conid":"265598",
+       "companyHeader":"APPLE INC - NASDAQ",
+       "companyName":"APPLE INC",
+       "symbol":"AAPL",
+       "description":"NASDAQ",
+       "restricted":null,
+       "fop":null,
+       "opt":"20231124;20231201;20231208;20231215;20231222;20231229;20240105;20240119;20240216;20240315;20240419;20240621;20240719;20240920;20241220;20250117;20250620;20250919;20251219;20260116",
+       "war":"20231019;20231020;20231023;20231024;20231025;20231026;20231027;20231030;20231031;20231101;20231102;20231103;20231106;20231109;20231110;20231113;20231114;20231115;20231116;20231117;20231120;20231121;20231123;20231124;20231130;20231201;20231207;20231208;20231211;20231212;20231213;20231214;20231215;20231222;20231229;20240116;20240117;20240118;20240119;20240215;20240216;20240308;20240312;20240313;20240314;20240315;20240418;20240614;20240617;20240618;20240619;20240620;20240621;20240718;20240917;20240918;20240919;20240920;20241217;20241218;20241219;20241220;20250114;20250115;20250116;20250117;20250318;20250320;20250321;20250617;20250618;20250619;20250620;20250918;20250919;20251216;20251218;20251219;20260113;20260114;20260115;20260116;20260319;20260616;20261217;20270114",
+       "sections":[
+          {
+             "secType":"STK"
+          },
+          {
+             "secType":"OPT",
+             "months":"NOV23;DEC23;JAN24;FEB24;MAR24;APR24;JUN24;JUL24;SEP24;DEC24;JAN25;JUN25;SEP25;DEC25;JAN26",
+             "exchange":"SMART;AMEX;BATS;BOX;CBOE;CBOE2;EDGX;EMERALD;GEMINI;IBUSOPT;ISE;MERCURY;MIAX;NASDAQBX;NASDAQOM;PEARL;PHLX;PSE"
+          },
+          {
+             "secType":"WAR",
+             "months":"OCT23;NOV23;DEC23;JAN24;FEB24;MAR24;APR24;JUN24;JUL24;SEP24;DEC24;JAN25;MAR25;JUN25;SEP25;DEC25;JAN26;MAR26;JUN26;DEC26;JAN27",
+             "exchange":"BVME;EBS;FWB;GETTEX;SBF;SWB"
+          },
+          {
+             "secType":"IOPT"
+          },
+          {
+             "secType":"CFD",
+             "exchange":"SMART",
+             "conid":"120549942"
+          },
+          {
+             "secType":"BAG"
+          }
+       ]
+    },
+    {
+       "conid":"38708077",
+       "companyHeader":"APPLE INC - MEXI",
+       "companyName":"APPLE INC",
+       "symbol":"AAPL",
+       "description":"MEXI",
+       "restricted":null,
+       "fop":null,
+       "opt":null,
+       "war":null,
+       "sections":[
+          {
+             "secType":"STK",
+             "exchange":"MEXI;"
+          }
+       ]
+    },
+    {
+       "conid":"532640894",
+       "companyHeader":"APPLE INC-CDR - AEQLIT",
+       "companyName":"APPLE INC-CDR",
+       "symbol":"AAPL",
+       "description":"AEQLIT",
+       "restricted":null,
+       "fop":null,
+       "opt":null,
+       "war":null,
+       "sections":[
+          {
+             "secType":"STK"
+          }
+       ]
+    },
+    {
+       "conid":"273982664",
+       "companyHeader":"APPLE INC - EBS",
+       "companyName":"APPLE INC",
+       "symbol":"AAPL",
+       "description":"EBS",
+       "restricted":null,
+       "fop":null,
+       "opt":null,
+       "war":null,
+       "sections":[
+          {
+             "secType":"STK"
+          }
+       ]
+    },
+    {
+       "conid":"493546048",
+       "companyHeader":"LS 1X AAPL - LSEETF",
+       "companyName":"LS 1X AAPL",
+       "symbol":"AAPL",
+       "description":"LSEETF",
+       "restricted":null,
+       "fop":null,
+       "opt":null,
+       "war":null,
+       "sections":[
+          {
+             "secType":"STK"
+          }
+       ]
+    },
+    {
+       "issuers":[
+          {
+             "id":"e1432232",
+             "name":"Apple Inc"
+          }
+       ],
+       "bondid":5,
+       "conid":"2147483647",
+       "companyHeader":"Corporate Fixed Income",
+       "companyName":null,
+       "symbol":"AAPL",
+       "description":null,
+       "restricted":null,
+       "fop":null,
+       "opt":null,
+       "war":null,
+       "sections":[
+          {
+             "secType":"BOND"
+          }
+       ]
+    }
+ ]

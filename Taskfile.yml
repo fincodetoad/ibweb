@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  test:Unit:
+    cmds:
+      - go test --run=Unit ./...
+
+  test:Integration:
+    cmds:
+      - go test --run=Integration
+      
+

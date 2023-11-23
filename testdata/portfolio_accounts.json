@@ -1,0 +1,34 @@
+[
+    {
+       "id":"DU2445022",
+       "PrepaidCrypto-Z":false,
+       "PrepaidCrypto-P":false,
+       "brokerageAccess":true,
+       "accountId":"DU2445022",
+       "accountVan":"DU2445022",
+       "accountTitle":"Jack Smith",
+       "displayName":"Jack Smith",
+       "accountAlias":null,
+       "accountStatus":1650772800000,
+       "currency":"USD",
+       "type":"DEMO",
+       "tradingType":"STKNOPT",
+       "businessType":"INDEPENDENT",
+       "ibEntity":"IBLLC-US",
+       "faclient":false,
+       "clearingStatus":"O",
+       "covestor":false,
+       "noClientTrading":false,
+       "trackVirtualFXPortfolio":false,
+       "parent":{
+          "mmc":[
+             
+          ],
+          "accountId":"",
+          "isMParent":false,
+          "isMChild":false,
+          "isMultiplex":false
+       },
+       "desc":"DU2445022"
+    }
+ ]
