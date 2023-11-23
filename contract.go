@@ -2,6 +2,7 @@ package ibweb
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -15,9 +16,17 @@ const (
 type SecType string
 
 const (
-	Options = "OPT"
-	Stock   = "STK"
-	War     = "WAR"
+	Options SecType = "OPT"
+	Stock   SecType = "STK"
+	War     SecType = "WAR"
+)
+
+// Right - Options right
+type Right string
+
+const (
+	Call Right = "C"
+	Put  Right = "P"
 )
 
 /*
@@ -100,6 +109,85 @@ type SearchStrikes struct {
 }
 
 /*
+SecurityDefinitionInfoInput -
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Contract/paths/~1iserver~1secdef~1info/get
+*/
+type SecurityDefinitionInfoInput struct {
+	ConID    string
+	SecType  SecType
+	Month    string
+	Exchange string
+	Strike   float64
+	Right    string
+}
+
+func (s SecurityDefinitionInfoInput) toQuery() []query {
+	queries := []query{
+		{
+			key:   "conid",
+			value: s.ConID,
+		},
+		{
+			key:   "sectype",
+			value: string(s.SecType),
+		},
+	}
+
+	if s.Month != "" {
+		queries = append(queries, query{
+			key:   "month",
+			value: s.Month,
+		})
+	}
+
+	if s.Exchange != "" {
+		queries = append(queries, query{
+			key:   "exchange",
+			value: s.Exchange,
+		})
+	}
+
+	if s.Strike != 0 {
+		queries = append(queries, query{
+			key:   "strike",
+			value: fmt.Sprintf("%f", s.Strike),
+		})
+	}
+
+	if s.Right != "" {
+		queries = append(queries, query{
+			key:   "right",
+			value: s.Right,
+		})
+	}
+
+	return queries
+}
+
+/*
+SecurityDefinitionInfo -
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Contract/paths/~1iserver~1secdef~1info/get
+*/
+type SecurityDefinitionInfo struct {
+	Conid           int     `json:"conid"`
+	Symbol          string  `json:"symbol"`
+	SecType         string  `json:"secType"`
+	Exchange        string  `json:"exchange"`
+	ListingExchange string  `json:"listingExchange"`
+	Right           string  `json:"right"`
+	Strike          float64 `json:"strike"`
+	Currency        string  `json:"currency"`
+	Cusip           string  `json:"cusip"`
+	Coupon          string  `json:"coupon"`
+	Desc1           string  `json:"desc1"`
+	Desc2           string  `json:"desc2"`
+	MaturityDate    string  `json:"maturityDate"`
+	Multiplier      string  `json:"multiplier"`
+	TradingClass    string  `json:"tradingClass"`
+	ValidExchanges  string  `json:"validExchanges"`
+}
+
+/*
 SearchContracts - Searches for a contract
 Link: https://www.interactivebrokers.com/api/doc.html#tag/Contract/paths/~1iserver~1secdef~1search/post
 */
@@ -153,4 +241,32 @@ func (c *client) SearchStrikes(input SearchStrikesInput) (*SearchStrikes, error)
 	}
 
 	return &searchStrikes, nil
+}
+
+/*
+SecurityDefinitionInfo - Get a security definition informaiton
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Contract/paths/~1iserver~1secdef~1info/get
+*/
+func (c *client) SecurityDefinitionInfo(input SecurityDefinitionInfoInput) ([]SecurityDefinitionInfo, error) {
+	resp, err := c.get(secDefInfoPath, input.toQuery()...)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, StatusCodeError{StatusCode: resp.StatusCode, Err: NewIBError(resp)}
+	}
+
+	defer resp.Body.Close()
+	v, err := readAllFn(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var secDefInfo []SecurityDefinitionInfo
+	if err := json.Unmarshal(v, &secDefInfo); err != nil {
+		return nil, err
+	}
+
+	return secDefInfo, nil
 }

@@ -21,6 +21,7 @@ type Client interface {
 	// Contracts
 	SearchContracts(input SearchContractsInput) ([]Contract, error)
 	SearchStrikes(input SearchStrikesInput) (*SearchStrikes, error)
+	SecurityDefinitionInfo(input SecurityDefinitionInfoInput) ([]SecurityDefinitionInfo, error)
 
 	// Portfolio
 	PortfolioAccounts() ([]PortfolioAccount, error)
