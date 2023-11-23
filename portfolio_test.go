@@ -355,9 +355,11 @@ func TestAccountInformationIntegration(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Greater(t, len(portfolioAccounts), 0)
 
-	_, err = c.AccountInformation(portfolioAccounts[0].AccountID)
-	assert.Nil(t, err)
-	t.Fail()
+	if !t.Failed() {
+		_, err = c.AccountInformation(portfolioAccounts[0].AccountID)
+		assert.Nil(t, err)
+		t.Fail()
+	}
 }
 
 func TestAccountInformationUnit(t *testing.T) {

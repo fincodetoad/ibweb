@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// IBError - error format often returned from the interactive brokers api
 type IBError struct {
 	Err string `json:"error"`
 }
@@ -24,7 +25,7 @@ func NewIBError(resp *http.Response) IBError {
 
 	if err := json.Unmarshal(v, &err); err != nil {
 		return IBError{
-			Err: fmt.Sprintf("failed to parse IB error '%s' into go error", string(v)),
+			Err: string(v),
 		}
 	}
 
@@ -35,6 +36,7 @@ func (i IBError) Error() string {
 	return i.Err
 }
 
+// StatusCodeError - standardized error for status code failures
 type StatusCodeError struct {
 	StatusCode int
 	Err        error

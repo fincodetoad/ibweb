@@ -28,6 +28,9 @@ type Client interface {
 	SubAccounts() ([]SubAccount, error)
 	SubAccountsLarge(page int) (*SubAccountsLarge, error)
 	AccountInformation(accountID string) (*AccountInformation, error)
+
+	// Order
+	PlaceOrders(accountID string, input PlaceOrdersInput) ([]OrderPlacedResp, error)
 }
 
 type client struct {
