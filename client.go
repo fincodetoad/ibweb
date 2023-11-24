@@ -34,6 +34,7 @@ type Client interface {
 	PlaceOrderReply(replyID string, input PlaceOrderReplyInput) ([]PlaceOrders, error)
 	CancelOrder(accountID, orderID string) (*CancelOrder, error)
 	LiveOrders() (*LiveOrders, error)
+	OrderStatus(orderID string) (*OrderStatus, error)
 }
 
 type client struct {
