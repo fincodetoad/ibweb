@@ -3,6 +3,7 @@ package ibweb
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -12,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPlaceOrderReplyAndCancelIntegration(t *testing.T) {
+func TestPlaceOrderReplCancelAndLiveIntegration(t *testing.T) {
 	c := NewWithClient(&http.Client{Transport: &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}}, "https://127.0.0.1:5555")
@@ -56,10 +57,14 @@ func TestPlaceOrderReplyAndCancelIntegration(t *testing.T) {
 	}
 
 	if !t.Failed() {
+		_, err := c.LiveOrders()
+		assert.Nil(t, err)
+	}
+
+	if !t.Failed() {
 		_, err := c.CancelOrder(portfolioAccounts[0].AccountID, orderID)
 		assert.Nil(t, err)
 	}
-	t.Fail()
 }
 
 func TestPlaceOrdersUnit(t *testing.T) {
@@ -359,6 +364,107 @@ func TestCancelOrderUnit(t *testing.T) {
 
 		c := New("http://127.0.0.1:5555")
 		_, err := c.CancelOrder("DU777777", "22345544")
+		assertError(t, tc.want.wantErr, tc.want.wantErrContains, err)
+
+		httpmock.DeactivateAndReset()
+	}
+}
+
+func TestLiveOrdersUnit(t *testing.T) {
+	type input struct {
+		handler   func(req *http.Request) (*http.Response, error)
+		readAllFn func(r io.Reader) ([]byte, error)
+	}
+
+	type want struct {
+		wantErr         bool
+		wantErrContains string
+	}
+
+	tests := []struct {
+		name  string
+		input input
+		want  want
+	}{
+		{
+			"handles failure to get",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return nil, errors.New("failed to get live orders")
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "failed to get live orders",
+			},
+		},
+		{
+			"handles unexpected status code",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(500, "failed"), nil
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "invalid status code",
+			},
+		},
+		{
+			"handles failure to read response body",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(200, ""), nil
+				},
+				readAllFn: func(r io.Reader) ([]byte, error) {
+					return nil, errors.New("failed to get live orders")
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "failed to get live orders",
+			},
+		},
+		{
+			"handles failure to unmarshal response",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(200, "garbage"), nil
+				},
+				readAllFn: io.ReadAll,
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "invalid character",
+			},
+		},
+		{
+			"is successful",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					v, err := os.ReadFile("./testdata/live_orders.json")
+					if !assert.Nil(t, err) {
+						t.FailNow()
+					}
+
+					return httpmock.NewBytesResponse(200, v), nil
+				},
+				readAllFn: io.ReadAll,
+			},
+			want{
+				wantErr: false,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		httpmock.Activate()
+		readAllFn = tc.input.readAllFn
+
+		httpmock.RegisterResponder(http.MethodGet, fmt.Sprintf("http://127.0.0.1:5555/%s", liveOrdersPath), tc.input.handler)
+
+		c := New("http://127.0.0.1:5555")
+		_, err := c.LiveOrders()
 		assertError(t, tc.want.wantErr, tc.want.wantErrContains, err)
 
 		httpmock.DeactivateAndReset()

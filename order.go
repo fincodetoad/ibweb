@@ -9,6 +9,7 @@ const (
 	placeOrdersPath     = "v1/api/iserver/account/{accountId}/orders"
 	cancelOrderPath     = "v1/api/iserver/account/{accountId}/order/{orderId}"
 	placeOrderReplyPath = "v1/api/iserver/reply/{replyid}"
+	liveOrdersPath      = "v1/api/iserver/account/orders"
 )
 
 // TimeInForce - time for order to execute
@@ -125,6 +126,39 @@ type CancelOrder struct {
 	Account string `json:"account,omitempty"`
 }
 
+type LiveOrders struct {
+	Filters []string `json:"filters"`
+	Orders  []struct {
+		Acct               string  `json:"acct"`
+		Conidex            string  `json:"conidex"`
+		Conid              int     `json:"conid"`
+		OrderID            int     `json:"orderId"`
+		CashCcy            string  `json:"cashCcy"`
+		SizeAndFills       string  `json:"sizeAndFills"`
+		OrderDesc          string  `json:"orderDesc"`
+		Description1       string  `json:"description1"`
+		Ticker             string  `json:"ticker"`
+		SecType            string  `json:"secType"`
+		ListingExchange    string  `json:"listingExchange"`
+		RemainingQuantity  float64 `json:"remainingQuantity"`
+		FilledQuantity     float64 `json:"filledQuantity"`
+		CompanyName        string  `json:"companyName"`
+		Status             string  `json:"status"`
+		OrigOrderType      string  `json:"origOrderType"`
+		SupportsTaxOpt     string  `json:"supportsTaxOpt"`
+		LastExecutionTime  string  `json:"lastExecutionTime"`
+		LastExecutionTimeR int     `json:"lastExecutionTime_r"`
+		OrderType          string  `json:"orderType"`
+		OrderRef           string  `json:"order_ref"`
+		Side               string  `json:"side"`
+		TimeInForce        string  `json:"timeInForce"`
+		Price              int     `json:"price"`
+		BgColor            string  `json:"bgColor"`
+		FgColor            string  `json:"fgColor"`
+	} `json:"orders"`
+	Snapshot bool `json:"snapshot"`
+}
+
 /*
 PlaceOrders - Places orders
 Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1account~1%7BaccountId%7D~1orders/post
@@ -222,4 +256,32 @@ func (c *client) CancelOrder(accountID, orderID string) (*CancelOrder, error) {
 	}
 
 	return &cancelOrder, nil
+}
+
+/*
+LiveOrders - Gets all live orders
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order
+*/
+func (c *client) LiveOrders() (*LiveOrders, error) {
+	resp, err := c.get(liveOrdersPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, StatusCodeError{StatusCode: resp.StatusCode, Err: NewIBError(resp)}
+	}
+
+	defer resp.Body.Close()
+	v, err := readAllFn(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var liveOrders LiveOrders
+	if err := json.Unmarshal(v, &liveOrders); err != nil {
+		return nil, err
+	}
+
+	return &liveOrders, nil
 }
