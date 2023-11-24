@@ -5,7 +5,7 @@ services:
     image: voyz/ibeam
     container_name: ibeam
     env_file:
-      - credentials.env.list
+      - my.env.list
     ports:
       - 5555:5000
       - 5001:5001

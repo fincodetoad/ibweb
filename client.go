@@ -30,7 +30,9 @@ type Client interface {
 	AccountInformation(accountID string) (*AccountInformation, error)
 
 	// Order
-	PlaceOrders(accountID string, input PlaceOrdersInput) ([]OrderPlacedResp, error)
+	PlaceOrders(accountID string, input PlaceOrdersInput) ([]PlaceOrders, error)
+	PlaceOrderReply(replyID string, input PlaceOrderReplyInput) ([]PlaceOrders, error)
+	CancelOrder(accountID, orderID string) (*CancelOrder, error)
 }
 
 type client struct {
@@ -118,6 +120,19 @@ func (c *client) post(path string, data interface{}) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	return c.doFn(req)
+}
+
+func (c *client) delete(path string) (*http.Response, error) {
+	req, err := newRequestFn(
+		http.MethodDelete,
+		fmt.Sprintf("%s/%s", c.url, path),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
 
 	return c.doFn(req)
 }

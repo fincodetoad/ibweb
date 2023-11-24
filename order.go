@@ -6,7 +6,9 @@ import (
 )
 
 const (
-	placeOrdersPath = "v1/api/iserver/account/{accountId}/orders"
+	placeOrdersPath     = "v1/api/iserver/account/{accountId}/orders"
+	cancelOrderPath     = "v1/api/iserver/account/{accountId}/order/{orderId}"
+	placeOrderReplyPath = "v1/api/iserver/reply/{replyid}"
 )
 
 // TimeInForce - time for order to execute
@@ -82,7 +84,11 @@ type Order struct {
 	} `json:"strategyParameters,omitempty"`
 }
 
-type OrderPlacedResp struct {
+/*
+PlaceOrders -
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1account~1%7BaccountId%7D~1orders/post
+*/
+type PlaceOrders struct {
 	OrderID          string   `json:"order_id"`
 	OrderStatus      string   `json:"order_status"`
 	EncryptedMessage string   `json:"encrypt_message"`
@@ -91,10 +97,39 @@ type OrderPlacedResp struct {
 }
 
 /*
+PlaceOrderReplyInput - Reply to an interactive brokers order confirmation check
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1reply~1%7Breplyid%7D/post
+*/
+type PlaceOrderReplyInput struct {
+	Confirmed bool `json:"confirmed"`
+}
+
+/*
+PlaceOrderReplyInput -
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1reply~1%7Breplyid%7D/post
+*/
+type PlaceOrderReply struct {
+	OrderID      string `json:"order_id"`
+	OrderStatus  string `json:"order_status"`
+	LocalOrderID string `json:"local_order_id"`
+}
+
+/*
+CancelOrder - Cancel an order placed
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1account~1%7BaccountId%7D~1order~1%7BorderId%7D/delete
+*/
+type CancelOrder struct {
+	OrderID int    `json:"order_id"`
+	Msg     string `json:"msg"`
+	Conid   int    `json:"conid"`
+	Account string `json:"account,omitempty"`
+}
+
+/*
 PlaceOrders - Places orders
 Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1account~1%7BaccountId%7D~1orders/post
 */
-func (c *client) PlaceOrders(accountID string, input PlaceOrdersInput) ([]OrderPlacedResp, error) {
+func (c *client) PlaceOrders(accountID string, input PlaceOrdersInput) ([]PlaceOrders, error) {
 	resp, err := c.post(substituteParam(placeOrdersPath, param{
 		key:   "accountId",
 		value: accountID,
@@ -113,10 +148,78 @@ func (c *client) PlaceOrders(accountID string, input PlaceOrdersInput) ([]OrderP
 		return nil, err
 	}
 
-	var orderResp []OrderPlacedResp
+	var orderResp []PlaceOrders
 	if err := json.Unmarshal(v, &orderResp); err != nil {
 		return nil, err
 	}
 
 	return orderResp, nil
+}
+
+/*
+PlaceOrderReply - Reply to an interactive brokers order confirmation check
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1reply~1%7Breplyid%7D/post
+*/
+func (c *client) PlaceOrderReply(replyID string, input PlaceOrderReplyInput) ([]PlaceOrders, error) {
+	resp, err := c.post(substituteParam(placeOrderReplyPath, param{
+		key:   "replyid",
+		value: replyID,
+	}), input)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, StatusCodeError{StatusCode: resp.StatusCode, Err: NewIBError(resp)}
+	}
+
+	defer resp.Body.Close()
+	v, err := readAllFn(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var orderResp []PlaceOrders
+	if err := json.Unmarshal(v, &orderResp); err != nil {
+		return nil, err
+	}
+
+	return orderResp, nil
+}
+
+/*
+CancelOrder - Cancel an order placed
+Link: https://www.interactivebrokers.com/api/doc.html#tag/Order/paths/~1iserver~1account~1%7BaccountId%7D~1order~1%7BorderId%7D/delete
+*/
+func (c *client) CancelOrder(accountID, orderID string) (*CancelOrder, error) {
+	resp, err := c.delete(substituteParam(cancelOrderPath,
+		param{
+			key:   "accountId",
+			value: accountID,
+		},
+		param{
+			key:   "orderId",
+			value: orderID,
+		},
+	))
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, StatusCodeError{StatusCode: resp.StatusCode, Err: NewIBError(resp)}
+	}
+
+	defer resp.Body.Close()
+	v, err := readAllFn(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var cancelOrder CancelOrder
+	if err := json.Unmarshal(v, &cancelOrder); err != nil {
+		return nil, err
+	}
+
+	return &cancelOrder, nil
 }
