@@ -35,6 +35,9 @@ type Client interface {
 	CancelOrder(accountID, orderID string) (*CancelOrder, error)
 	LiveOrders() (*LiveOrders, error)
 	OrderStatus(orderID string) (*OrderStatus, error)
+
+	//CCP
+	PositionsByContractID(conID string) (*PositionsByConID, error)
 }
 
 type client struct {
