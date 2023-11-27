@@ -37,6 +37,9 @@ type Client interface {
 	LiveOrders() (*LiveOrders, error)
 	OrderStatus(orderID string) (*OrderStatus, error)
 
+	// Market Data
+	MarketDataHistory(input MarketDataHistoryInput) (*MarketDataHistory, error)
+
 	//CCP
 	PositionsByContractID(conID string) (*PositionsByConID, error)
 }

@@ -2,7 +2,6 @@ package ibweb
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -420,8 +419,6 @@ func (c *client) AccountSummary(accountID string) (*AccountSummary, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(string(v))
 
 	var accountSummary AccountSummary
 	if err := json.Unmarshal(v, &accountSummary); err != nil {
