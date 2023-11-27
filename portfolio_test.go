@@ -462,3 +462,119 @@ func TestAccountInformationUnit(t *testing.T) {
 		httpmock.DeactivateAndReset()
 	}
 }
+
+func TestAccountSummaryIntegration(t *testing.T) {
+	c := NewWithClient(&http.Client{Transport: &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}}, "https://127.0.0.1:5555")
+
+	portfolioAccounts, err := c.PortfolioAccounts()
+	assert.Nil(t, err)
+	assert.Greater(t, len(portfolioAccounts), 0)
+
+	if !t.Failed() {
+		_, err = c.AccountSummary(portfolioAccounts[0].AccountID)
+		assert.Nil(t, err)
+	}
+}
+
+func TestAccountSummaryUnit(t *testing.T) {
+	type input struct {
+		handler   func(req *http.Request) (*http.Response, error)
+		readAllFn func(r io.Reader) ([]byte, error)
+	}
+
+	type want struct {
+		wantErr         bool
+		wantErrContains string
+	}
+
+	tests := []struct {
+		name  string
+		input input
+		want  want
+	}{
+		{
+			"handles failure to get",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return nil, errors.New("failed to get account summary")
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "failed to get account summary",
+			},
+		},
+		{
+			"handles unexpected status code",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(500, "failed"), nil
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "invalid status code",
+			},
+		},
+		{
+			"handles failure to read response body",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(200, ""), nil
+				},
+				readAllFn: func(r io.Reader) ([]byte, error) {
+					return nil, errors.New("failed to read account summary")
+				},
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "failed to read account summary",
+			},
+		},
+		{
+			"handles failure to unmarshal response",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					return httpmock.NewStringResponse(200, "garbage"), nil
+				},
+				readAllFn: io.ReadAll,
+			},
+			want{
+				wantErr:         true,
+				wantErrContains: "invalid character",
+			},
+		},
+		{
+			"is successful",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					v, err := os.ReadFile("./testdata/account_summary.json")
+					if !assert.Nil(t, err) {
+						t.FailNow()
+					}
+
+					return httpmock.NewBytesResponse(200, v), nil
+				},
+				readAllFn: io.ReadAll,
+			},
+			want{
+				wantErr: false,
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		httpmock.Activate()
+		readAllFn = tc.input.readAllFn
+
+		httpmock.RegisterResponder(http.MethodGet, "http://127.0.0.1:5555/v1/api/portfolio/DU7777777/summary", tc.input.handler)
+
+		c := New("http://127.0.0.1:5555")
+		_, err := c.AccountSummary("DU7777777")
+		assertError(t, tc.want.wantErr, tc.want.wantErrContains, err)
+
+		httpmock.DeactivateAndReset()
+	}
+}

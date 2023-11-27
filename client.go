@@ -28,6 +28,7 @@ type Client interface {
 	SubAccounts() ([]SubAccount, error)
 	SubAccountsLarge(page int) (*SubAccountsLarge, error)
 	AccountInformation(accountID string) (*AccountInformation, error)
+	AccountSummary(accountID string) (*AccountSummary, error)
 
 	// Order
 	PlaceOrders(accountID string, input PlaceOrdersInput) ([]PlaceOrders, error)
