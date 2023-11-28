@@ -41,7 +41,7 @@ type Client interface {
 	MarketDataHistory(input MarketDataHistoryInput) (*MarketDataHistory, error)
 
 	//CCP
-	PositionsByContractID(conID string) (*PositionsByConID, error)
+	PositionByContractID(accountID, conID string) ([]Position, error)
 }
 
 type client struct {

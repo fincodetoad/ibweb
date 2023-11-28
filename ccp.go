@@ -6,40 +6,36 @@ import (
 )
 
 const (
-	positionsByConIDPath = "v1/api/portfolio/positions/{conid}"
+	positionByConIDPath = "v1/api/portfolio/{accountId}/position/{conid}"
 )
 
-type PositionsByConID struct {
-	ACCTID []ACCTID `json:"ACCTID"`
-}
-
-type ACCTID struct {
+type Position struct {
 	AcctID            string   `json:"acctId"`
 	Conid             int      `json:"conid"`
 	ContractDesc      string   `json:"contractDesc"`
 	AssetClass        string   `json:"assetClass"`
-	Position          int      `json:"position"`
-	MktPrice          int      `json:"mktPrice"`
-	MktValue          int      `json:"mktValue"`
+	Position          float64  `json:"position"`
+	MktPrice          float64  `json:"mktPrice"`
+	MktValue          float64  `json:"mktValue"`
 	Currency          string   `json:"currency"`
-	AvgCost           int      `json:"avgCost"`
-	AvgPrice          int      `json:"avgPrice"`
-	RealizedPnl       int      `json:"realizedPnl"`
-	UnrealizedPnl     int      `json:"unrealizedPnl"`
+	AvgCost           float64  `json:"avgCost"`
+	AvgPrice          float64  `json:"avgPrice"`
+	RealizedPnl       float64  `json:"realizedPnl"`
+	UnrealizedPnl     float64  `json:"unrealizedPnl"`
 	Exchs             string   `json:"exchs"`
 	Expiry            string   `json:"expiry"`
 	PutOrCall         string   `json:"putOrCall"`
-	Multiplier        int      `json:"multiplier"`
-	Strike            int      `json:"strike"`
+	Multiplier        float64  `json:"multiplier"`
+	Strike            string   `json:"strike"`
 	ExerciseStyle     string   `json:"exerciseStyle"`
 	UndConid          int      `json:"undConid"`
 	ConExchMap        []string `json:"conExchMap"`
-	BaseMktValue      int      `json:"baseMktValue"`
-	BaseMktPrice      int      `json:"baseMktPrice"`
-	BaseAvgCost       int      `json:"baseAvgCost"`
-	BaseAvgPrice      int      `json:"baseAvgPrice"`
-	BaseRealizedPnl   int      `json:"baseRealizedPnl"`
-	BaseUnrealizedPnl int      `json:"baseUnrealizedPnl"`
+	BaseMktValue      float64  `json:"baseMktValue"`
+	BaseMktPrice      float64  `json:"baseMktPrice"`
+	BaseAvgCost       float64  `json:"baseAvgCost"`
+	BaseAvgPrice      float64  `json:"baseAvgPrice"`
+	BaseRealizedPnl   float64  `json:"baseRealizedPnl"`
+	BaseUnrealizedPnl float64  `json:"baseUnrealizedPnl"`
 	Name              string   `json:"name"`
 	LastTradingDay    string   `json:"lastTradingDay"`
 	Group             string   `json:"group"`
@@ -57,11 +53,15 @@ type ACCTID struct {
 PositionsByContractID - Gets positions by contract ID
 Link: https://www.interactivebrokers.com/api/doc.html#tag/Portfolio/paths/~1portfolio~1%7BaccountId%7D~1ledger/get
 */
-func (c *client) PositionsByContractID(conID string) (*PositionsByConID, error) {
-	resp, err := c.get(substituteParam(positionsByConIDPath,
+func (c *client) PositionByContractID(accountID, conID string) ([]Position, error) {
+	resp, err := c.get(substituteParam(positionByConIDPath,
 		param{
-			key:   "conID",
+			key:   "conid",
 			value: conID,
+		},
+		param{
+			key:   "accountId",
+			value: accountID,
 		},
 	))
 	if err != nil {
@@ -78,10 +78,10 @@ func (c *client) PositionsByContractID(conID string) (*PositionsByConID, error) 
 		return nil, err
 	}
 
-	var positionByConID PositionsByConID
+	var positionByConID []Position
 	if err := json.Unmarshal(v, &positionByConID); err != nil {
 		return nil, err
 	}
 
-	return &positionByConID, nil
+	return positionByConID, nil
 }

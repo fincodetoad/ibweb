@@ -13,15 +13,12 @@ func TestPositionsByContractIDIntegration(t *testing.T) {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}}, "https://127.0.0.1:5555")
 
-	contracts, err := c.SearchContracts(SearchContractsInput{
-		Symbol:  "AAPL",
-		SecType: Options,
-	})
+	portfolioAccounts, err := c.PortfolioAccounts()
 	assert.Nil(t, err)
-	assert.Greater(t, len(contracts), 0)
+	assert.Greater(t, len(portfolioAccounts), 0)
 
 	if !t.Failed() {
-		_, err := c.PositionsByContractID(contracts[0].Conid)
+		_, err := c.PositionByContractID(portfolioAccounts[0].AccountID, "659248794")
 		assert.Nil(t, err)
 	}
 }
