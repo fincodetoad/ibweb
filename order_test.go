@@ -544,23 +544,23 @@ func TestOrderStatusUnit(t *testing.T) {
 				wantErrContains: "invalid character",
 			},
 		},
-		// {
-		// 	"is successful",
-		// 	input{
-		// 		handler: func(req *http.Request) (*http.Response, error) {
-		// 			v, err := os.ReadFile("./testdata/live_orders.json")
-		// 			if !assert.Nil(t, err) {
-		// 				t.FailNow()
-		// 			}
+		{
+			"is successful",
+			input{
+				handler: func(req *http.Request) (*http.Response, error) {
+					v, err := os.ReadFile("./testdata/order_status.json")
+					if !assert.Nil(t, err) {
+						t.FailNow()
+					}
 
-		// 			return httpmock.NewBytesResponse(200, v), nil
-		// 		},
-		// 		readAllFn: io.ReadAll,
-		// 	},
-		// 	want{
-		// 		wantErr: false,
-		// 	},
-		// },
+					return httpmock.NewBytesResponse(200, v), nil
+				},
+				readAllFn: io.ReadAll,
+			},
+			want{
+				wantErr: false,
+			},
+		},
 	}
 
 	for _, tc := range tests {

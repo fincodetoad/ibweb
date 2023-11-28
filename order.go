@@ -2,7 +2,6 @@ package ibweb
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -204,7 +203,7 @@ type OrderStatus struct {
 	SizeAndFills                 string `json:"size_and_fills"`
 	ExitStrategyDisplayPrice     string `json:"exit_strategy_display_price"`
 	ExitStrategyChartDescription string `json:"exit_strategy_chart_description"`
-	ExitStrategyToolAvailability int    `json:"exit_strategy_tool_availability"`
+	ExitStrategyToolAvailability string `json:"exit_strategy_tool_availability"`
 	AllowedDuplicateOpposite     bool   `json:"allowed_duplicate_opposite"`
 	OrderTime                    string `json:"order_time"`
 	OcaGroupID                   string `json:"oca_group_id"`
@@ -361,7 +360,6 @@ func (c *client) OrderStatus(orderID string) (*OrderStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(v))
 
 	var orderStatus OrderStatus
 	if err := json.Unmarshal(v, &orderStatus); err != nil {
