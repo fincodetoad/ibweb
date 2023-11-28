@@ -10,45 +10,47 @@ const (
 )
 
 type PositionsByConID struct {
-	ACCTID []struct {
-		AcctID            string   `json:"acctId"`
-		Conid             int      `json:"conid"`
-		ContractDesc      string   `json:"contractDesc"`
-		AssetClass        string   `json:"assetClass"`
-		Position          int      `json:"position"`
-		MktPrice          int      `json:"mktPrice"`
-		MktValue          int      `json:"mktValue"`
-		Currency          string   `json:"currency"`
-		AvgCost           int      `json:"avgCost"`
-		AvgPrice          int      `json:"avgPrice"`
-		RealizedPnl       int      `json:"realizedPnl"`
-		UnrealizedPnl     int      `json:"unrealizedPnl"`
-		Exchs             string   `json:"exchs"`
-		Expiry            string   `json:"expiry"`
-		PutOrCall         string   `json:"putOrCall"`
-		Multiplier        int      `json:"multiplier"`
-		Strike            int      `json:"strike"`
-		ExerciseStyle     string   `json:"exerciseStyle"`
-		UndConid          int      `json:"undConid"`
-		ConExchMap        []string `json:"conExchMap"`
-		BaseMktValue      int      `json:"baseMktValue"`
-		BaseMktPrice      int      `json:"baseMktPrice"`
-		BaseAvgCost       int      `json:"baseAvgCost"`
-		BaseAvgPrice      int      `json:"baseAvgPrice"`
-		BaseRealizedPnl   int      `json:"baseRealizedPnl"`
-		BaseUnrealizedPnl int      `json:"baseUnrealizedPnl"`
-		Name              string   `json:"name"`
-		LastTradingDay    string   `json:"lastTradingDay"`
-		Group             string   `json:"group"`
-		Sector            string   `json:"sector"`
-		SectorGroup       string   `json:"sectorGroup"`
-		Ticker            string   `json:"ticker"`
-		UndComp           string   `json:"undComp"`
-		UndSym            string   `json:"undSym"`
-		FullName          string   `json:"fullName"`
-		PageSize          int      `json:"pageSize"`
-		Model             string   `json:"model"`
-	} `json:"ACCTID"`
+	ACCTID []ACCTID `json:"ACCTID"`
+}
+
+type ACCTID struct {
+	AcctID            string   `json:"acctId"`
+	Conid             int      `json:"conid"`
+	ContractDesc      string   `json:"contractDesc"`
+	AssetClass        string   `json:"assetClass"`
+	Position          int      `json:"position"`
+	MktPrice          int      `json:"mktPrice"`
+	MktValue          int      `json:"mktValue"`
+	Currency          string   `json:"currency"`
+	AvgCost           int      `json:"avgCost"`
+	AvgPrice          int      `json:"avgPrice"`
+	RealizedPnl       int      `json:"realizedPnl"`
+	UnrealizedPnl     int      `json:"unrealizedPnl"`
+	Exchs             string   `json:"exchs"`
+	Expiry            string   `json:"expiry"`
+	PutOrCall         string   `json:"putOrCall"`
+	Multiplier        int      `json:"multiplier"`
+	Strike            int      `json:"strike"`
+	ExerciseStyle     string   `json:"exerciseStyle"`
+	UndConid          int      `json:"undConid"`
+	ConExchMap        []string `json:"conExchMap"`
+	BaseMktValue      int      `json:"baseMktValue"`
+	BaseMktPrice      int      `json:"baseMktPrice"`
+	BaseAvgCost       int      `json:"baseAvgCost"`
+	BaseAvgPrice      int      `json:"baseAvgPrice"`
+	BaseRealizedPnl   int      `json:"baseRealizedPnl"`
+	BaseUnrealizedPnl int      `json:"baseUnrealizedPnl"`
+	Name              string   `json:"name"`
+	LastTradingDay    string   `json:"lastTradingDay"`
+	Group             string   `json:"group"`
+	Sector            string   `json:"sector"`
+	SectorGroup       string   `json:"sectorGroup"`
+	Ticker            string   `json:"ticker"`
+	UndComp           string   `json:"undComp"`
+	UndSym            string   `json:"undSym"`
+	FullName          string   `json:"fullName"`
+	PageSize          int      `json:"pageSize"`
+	Model             string   `json:"model"`
 }
 
 /*
